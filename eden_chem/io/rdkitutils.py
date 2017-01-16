@@ -7,21 +7,17 @@ sdf_to_nx(file.sdf)
 smi_to_nx(file.smi)
 smiles_to_nx(smilesstringlist)
 
-# graph out:
-draw(nx)
-nx_to_smi(graphlist, path_to_file.smi)
 
 
 #bonus: garden style transformer.
 class MoleculeToGraph
 '''
 
-from sklearn.base import BaseEstimator, TransformerMixin
-from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.Chem import Draw
-import networkx as nx
 import logging
+from rdkit import Chem
+
+import networkx as nx
+from sklearn.base import BaseEstimator, TransformerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -126,46 +122,5 @@ def nx_to_rdkit(graph):
     return mol
 
 
-###########################
-#  output
-###########################
 
 
-def set_coordinates(chemlist):
-    for m in chemlist:
-        if m:
-            # updateprops fixes "RuntimeError: Pre-condition Violation"
-            m.UpdatePropertyCache(strict=False)
-            AllChem.Compute2DCoords(m)
-        else:
-            raise Exception('''set coordinates failed..''')
-
-
-def get_smiles_strings(graphs):
-    compounds = map(nx_to_rdkit, graphs)
-    return map(Chem.MolToSmiles, compounds)
-
-
-def nx_to_image(graphs, n_graphs_per_line=5, size=250, title_key=None, titles=None):
-    # we want a list of graphs
-    if isinstance(graphs, nx.Graph):
-        raise Exception("give me a list of graphs")
-    # make molecule objects
-    compounds = map(nx_to_rdkit, graphs)
-    # print compounds
-
-    # take care of the subtitle of each graph
-    if title_key:
-        legend = [g.graph.get(title_key, 'N/A') for g in graphs]
-    elif titles:
-        legend = titles
-    else:
-        legend = map(str, range(len(graphs)))
-    return compounds_to_image(compounds, n_graphs_per_line=n_graphs_per_line, size=size, legend=legend)
-
-
-def compounds_to_image(compounds, n_graphs_per_line=5, size=250, legend=None):
-    # calculate coordinates:
-    set_coordinates(compounds)
-    # make the image
-    return Draw.MolsToGridImage(compounds, molsPerRow=n_graphs_per_line, subImgSize=(size, size), legends=legend)
