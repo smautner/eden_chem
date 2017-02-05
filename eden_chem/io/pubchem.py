@@ -53,7 +53,8 @@ def _query_db(assay_id, fname=None, active=True, stepsize=50):
     # extract the listkey
     listkey = reply.json()['IdentifierList']['ListKey']
     size = reply.json()['IdentifierList']['Size']
-    _get_compounds(fname=fname, size=size, listkey=listkey, stepsize=stepsize)
+    _get_compounds(fname=fname+".tmp", size=size, listkey=listkey, stepsize=stepsize)
+    os.rename(fname+'.tmp',fname)
 
 
 def download(assay_id, active=True, stepsize=50):
