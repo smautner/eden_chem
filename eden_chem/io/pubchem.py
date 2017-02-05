@@ -34,11 +34,11 @@ def _get_compounds(fname, size, listkey, stepsize=50):
                     query += '/SDF?&listkey_start=' + str(index_start)
                     query += '&listkey_count=' + str(stepsize)
                     reply = requests.get(query)
-                    if 'PURGREST.Timeout' not in reply.text:
+                    if 'PUGREST.Timeout' not in reply.text:
                         repeat=False
                         file_handle.write(reply.text)
                     else:
-                        print "PURGREST TIMEOUT"
+                        print "PUGREST TIMEOUT"
 
             index_start = index_end
 
