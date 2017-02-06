@@ -19,9 +19,15 @@ def get_assay_description(assay_id):
     return name
 
 
-def _get_compounds(fname, size, listkey, stepsize=50):
+def _get_compounds(fname, active, aid, stepsize=50):
     with open(fname, 'w') as file_handle:
         index_start = 0
+
+        reply = requests.get(_make_rest_query(aid, active=active))
+        listkey = reply.json()['IdentifierList']['ListKey']
+        size = reply.json()['IdentifierList']['Size']
+
+
         for chunk, index_end in enumerate(range(0, size + stepsize, stepsize)):
             if index_end is not 0:
                 repeat = True
@@ -37,8 +43,11 @@ def _get_compounds(fname, size, listkey, stepsize=50):
                     if 'PUGREST.Timeout' in reply.text:
                         print "PUGREST TIMEOUT"
                     elif "PUGREST.BadRequest" in reply.text:
+                        # bad request means that the server throw our molecule list away.
+                        # we just make a new one
                         print 'bad request %s %d %d %d' % (query,chunk,index_end,size)
-                        exit()
+                        reply = requests.get(_make_rest_query(aid, active=active))
+                        listkey = reply.json()['IdentifierList']['ListKey']
                     elif reply.status_code != 200:
                         print "UNKNOWN ERRA " + query
                         exit()
@@ -63,11 +72,7 @@ def _make_rest_query(assay_id, active=True):
 
 
 def _query_db(assay_id, fname=None, active=True, stepsize=50):
-    reply = requests.get(_make_rest_query(assay_id, active=active))
-    # extract the listkey
-    listkey = reply.json()['IdentifierList']['ListKey']
-    size = reply.json()['IdentifierList']['Size']
-    _get_compounds(fname=fname+".tmp", size=size, listkey=listkey, stepsize=stepsize)
+    _get_compounds(fname=fname+".tmp", active=active, aid=assay_id, stepsize=stepsize)
     os.rename(fname+'.tmp',fname)
 
 
