@@ -39,7 +39,9 @@ def _get_compounds(fname, size, listkey, stepsize=50):
                     elif "PUGREST.BadRequest" in reply.text:
                         print 'bad request %s %d %d %d' % (query,chunk,index_end,size)
                         exit()
-
+                    elif reply.status_code != 200:
+                        print "UNKNOWN ERRA " + query
+                        exit()
                     else: # everything is OK
                         repeat=False
                         file_handle.write(reply.text)
