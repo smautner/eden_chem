@@ -50,6 +50,8 @@ def _get_compounds(fname, active, aid, stepsize=50):
                         listkey = reply.json()['IdentifierList']['ListKey']
                     elif reply.status_code != 200:
                         print "UNKNOWN ERRA " + query
+                        print reply.status_code
+                        print reply.text
                         exit()
                     else: # everything is OK
                         repeat=False
