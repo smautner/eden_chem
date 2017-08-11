@@ -54,17 +54,30 @@ class MoleculeToGraph(BaseEstimator, TransformerMixin):
 # import to networkx graphs
 ###############
 
-def sdf_to_nx(file):
-    # read sdf file
+
+def load_sdf(file):
     suppl = Chem.SDMolSupplier(file)
     for mol in suppl:
         if mol:
+            yield mol
+            
+def load_smi(file):
+    suppl = Chem.SmilesMolSupplier(file)
+    for mol in suppl:
+        if mol:
+            yield mol
+    
+
+def sdf_to_nx(file):
+    # read sdf file
+    suppl=load_sdf(file)
+    for mol in suppl:
             yield rdkmol_to_nx(mol)
 
 
 def smi_to_nx(file):
     # read smi file
-    suppl = Chem.SmilesMolSupplier(file)
+    suppl = load_smi(file)
     for mol in suppl:
         yield rdkmol_to_nx(mol)
 
