@@ -60,19 +60,20 @@ def load_sdf(file):
     for mol in suppl:
         if mol:
             yield mol
-            
+
+
 def load_smi(file):
     suppl = Chem.SmilesMolSupplier(file)
     for mol in suppl:
         if mol:
             yield mol
-    
+
 
 def sdf_to_nx(file):
     # read sdf file
-    suppl=load_sdf(file)
+    suppl = load_sdf(file)
     for mol in suppl:
-            yield rdkmol_to_nx(mol)
+        yield rdkmol_to_nx(mol)
 
 
 def smi_to_nx(file):
@@ -134,7 +135,3 @@ def nx_to_rdkit(graph):
 
     mol = mw.GetMol()
     return mol
-
-
-
-
