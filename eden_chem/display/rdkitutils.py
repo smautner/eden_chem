@@ -5,6 +5,24 @@ import networkx as nx
 from eden_chem.io.rdkitutils import nx_to_rdkit
 
 
+
+def nx_to_pos(graph):
+    '''
+    takes nx graph
+    returns pos dictionary that is usable by the eden draw functions {nodeid:(X,Y)}
+    ## note that I had to scale the pos dict by .1, otherwise pyplot complains
+    '''
+    chem=nx_to_rdkit(graph)
+    chem.UpdatePropertyCache(strict=False)
+    AllChem.Compute2DCoords(chem)
+    conf = chem.GetConformer(0)
+    rawpos = [(conf.GetAtomPosition(i).x,conf.GetAtomPosition(i).y) for i in range(conf.GetNumAtoms())]
+    #note that this only works because we dd the nodes in order when making an rdkit object
+    pos={n:p for n,p in zip(graph.nodes(),rawpos)}
+    return pos
+
+
+
 def set_coordinates(chemlist):
     for m in chemlist:
         if m:
